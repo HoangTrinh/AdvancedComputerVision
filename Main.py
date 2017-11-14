@@ -1,10 +1,12 @@
 import tensorflow as tf
 import numpy as np
 import Knn
-
-import matplotlib.pyplot as plt
-plt.style.use('ggplot')
 import warnings
+import matplotlib.pyplot as plt
+import SVM
+
+plt.style.use('ggplot')
+
 warnings.filterwarnings('ignore')
 plt.rcParams['figure.figsize'] = (10.0, 5.0)
 
@@ -21,16 +23,10 @@ X2 = np.random.multivariate_normal(mu2, covar2, num_points_each_cluster)
 y1 = np.ones(num_points_each_cluster)
 y2 = np.zeros(num_points_each_cluster)
 
-# Plot the train_data
-# plt.plot( X1[:, 0], X1[:,1], 'ro', label='class 1')
-# plt.plot(X2[:, 0], X2[:,1], 'bo', label='class 0')
-# plt.legend(loc='best')
-# plt.show()
-
-
 X_train = np.vstack((X1, X2))
 Y_train = np.hstack((y1, y2))
 
+# prepair data for tf
 X_train_tf = tf.constant(X_train)
 Y_train_tf = tf.constant(Y_train)
 
@@ -41,21 +37,44 @@ while(1):
     if a == '-100':
         break
     b = input('y_axis: ')
-    test_case = np.array([a,b])
+    test_case = np.array([a,b]).reshape(1,2)
+
+    #svm
+    model = SVM.my_svm(X_train, Y_train)
+    svm_label = SVM.predict(model, test_case)
+
+
+    #config data for tf knn
     test_case_tf = tf.constant(test_case, dtype= tf.float64)
     k_f = tf.constant(3)
     pred_scheme = Knn.knn(X_train_tf, Y_train_tf, X_test=test_case_tf, k=k_f)
 
     sess = tf.Session()
     top_y = sess.run(pred_scheme)
+    knn_label = Knn.get_label(top_y)
 
-    print("Test data belong to cluster %d"%Knn.get_label(top_y))
+    print("Test data belong to cluster %d by SVM" % svm_label)
+    print("Test data belong to cluster %d by KNN "%knn_label)
+
+
+    # Plot Knn
     plt.clf()
-    plt.title("Test data belong to cluster %d"%Knn.get_label(top_y))
-    plt.plot( X1[:, 0], X1[:,1], 'ro', label='cluster 1')
+    plt.subplot(221)
+    plt.title("Test data belong to cluster %d by KNN "%knn_label)
+    plt.plot(X1[:, 0], X1[:,1], 'ro', label='cluster 1')
     plt.plot(X2[:, 0], X2[:,1], 'bo', label='cluster 0')
-    plt.plot(test_case[0], test_case[1], 'g', marker='D', markersize=10, label='test point')
+    plt.plot(test_case[:,0], test_case[:,1], 'g', marker='D', markersize=10, label='test point')
+    plt.legend(loc='best')
+
+    # plot linear_svm boundary
+    plt.subplot(222)
+    plt.plot(X1[:, 0], X1[:, 1], 'ro', label='cluster 1')
+    plt.plot(X2[:, 0], X2[:, 1], 'bo', label='cluster 0')
+    plt.plot(test_case[:, 0], test_case[:, 1], 'g', marker='D', markersize=10, label='test point')
+    w = model.coef_[0]
+    t = -w[0] / w[1]
+    xx = np.linspace(-5, 5)
+    yy = t * xx - (model.intercept_[0]) / w[1]
+    plt.plot(xx, yy, 'k-')
     plt.legend(loc='best')
     plt.show()
-
-
