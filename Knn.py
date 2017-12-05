@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-
+from sklearn.neighbors import KNeighborsClassifier
 
 def knn(X_train, Y_train, X_test, k):
     neg_one = tf.constant(-1.0, dtype= tf.float64)
@@ -17,3 +17,7 @@ def knn(X_train, Y_train, X_test, k):
 def get_label(top_y):
     counts = np.bincount(top_y.astype('int64'))
     return np.argmax(counts)
+
+def sci_knn(X_train, Y_train, k):
+    model = KNeighborsClassifier(n_neighbors=k).fit(X_train,Y_train)
+    return model

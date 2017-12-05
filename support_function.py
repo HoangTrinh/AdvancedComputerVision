@@ -1,7 +1,7 @@
 import numpy as np
 import os
 
-def get_feature(img_name):
+def get_feature(img_name, feature_type):
     """
     :param img_name: "images/Chuoi_Su/4.jpg"
     :return:
@@ -12,7 +12,7 @@ def get_feature(img_name):
         _, data = sf.get_feature(img_name)
     """
     img_feature_name = img_name
-    img_feature_name = img_feature_name.replace("images","features")
+    img_feature_name = img_feature_name.replace("images",str(feature_type) + "_features")
     img_feature_name = img_feature_name.replace("jpg","npy")
 
     img_feature_data = np.load(img_feature_name)
@@ -20,7 +20,7 @@ def get_feature(img_name):
 
     return img_feature_name, img_feature_data
 
-def get_features_labels_from_folder(name_folder_direct, datatype):
+def get_features_labels_from_folder(name_folder_direct, datatype, feature_type):
     db_ROOT = name_folder_direct
     name_file_direct = db_ROOT + "/" + str(datatype) +".txt"
     Y = []
@@ -30,7 +30,7 @@ def get_features_labels_from_folder(name_folder_direct, datatype):
         names = name_file.read().splitlines()
 
     for name in names:
-        X.append(get_feature(name)[1])
+        X.append(get_feature(name, feature_type)[1])
 
 
     X = np.asarray(X)
@@ -45,6 +45,7 @@ def get_features_labels_from_folder(name_folder_direct, datatype):
 
     Y = np.array(Y)
     Y = Y.reshape((1, Y.shape[0])).T
+    Y = np.ravel(Y)
     #print(Y.shape)
     return X, Y
 
