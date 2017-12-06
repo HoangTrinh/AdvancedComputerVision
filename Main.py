@@ -18,11 +18,11 @@ for data_direct in os.listdir(Root):
     # score = model.score(X_test, Y_test)
 
     # # Knn run + score (0.64 )
-    # model  = Knn.sci_knn(X_train,Y_train, 101)
+    # model  = Knn.sci_knn(X_train,Y_train, 5)
     # score = model.score(X_test, Y_test)
     # print(score)
 
     # #native Bayes + score (0.436)
-    model = Bayes.bayes_with_nativeG(X_train, Y_train)
-    score = model.score(X_test, Y_test)
-    print(score)
+    # model = Bayes.bayes_with_nativeG(X_train, Y_train)
+    # score = model.score(X_test, Y_test)
+    # print(score)
