@@ -67,3 +67,4 @@ def k_split_sample(k_set, size):
         lbtrain_file.close()
         lbval_file.close()
         lbdev_file.close()
+#k_split_sample(5,0.2)
